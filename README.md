@@ -104,7 +104,7 @@ By default, the backend will run at [http://localhost:5000](http://localhost:500
 
 For questions or suggestions:
 
-* Email: [your-email@example.com](mailto:apetrenko77@gmail.com)
+* Email: [apetrenko77@gmail.com](mailto:apetrenko77@gmail.com)
 
 ✅ Enjoy working with **JobSkillsBoosterApp**!
 
