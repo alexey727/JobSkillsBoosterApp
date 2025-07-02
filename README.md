@@ -104,10 +104,7 @@ By default, the backend will run at [http://localhost:5000](http://localhost:500
 
 For questions or suggestions:
 
-* Email: [your-email@example.com](mailto:your-email@example.com)
-* GitHub Issues: [create an issue](https://github.com/your-repo/issues)
-
----
+* Email: [your-email@example.com](mailto:apetrenko77@gmail.com)
 
 ✅ Enjoy working with **JobSkillsBoosterApp**!
 
