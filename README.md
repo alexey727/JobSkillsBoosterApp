@@ -1,7 +1,8 @@
 ```markdown
 # 🚀 JobSkillsBoosterApp
 
-An application to boost skills and competencies. It consists of **Frontend** (React/NextJs) and **Backend** (Python/Flask).
+An application to boost skills and competencies. 
+It consists of **Frontend** (React/NextJs) and **Backend** (Python/Flask).
 
 ## 📂 Project Structure
 
