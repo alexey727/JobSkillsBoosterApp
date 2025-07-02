@@ -1,0 +1,129 @@
+{
+    "about": "JobSkillsBooster is an AI-powered platform for interview preparation, certification, and professional growth.",
+    "settings": {
+        "communicationModes": [
+            {
+                "name": "free",
+                "details": "Free conversation",
+                "direktAnswer": true
+            },
+            {
+                "name": "interview",
+                "details": "Interview for a specific position",
+                "direktAnswer": false
+            },
+            {
+                "name": "certificate",
+                "details": "Certification for a field",
+                "direktAnswer": false
+            }
+        ],
+        "testTypes": [
+            {
+                "type": "single",
+                "name": "Single-choice test"
+            },
+            {
+                "type": "multiple",
+                "name": "Multiple-choice test"
+            },
+            {
+                "type": "text",
+                "name": "Text response"
+            },
+            {
+                "type": "mixed",
+                "name": "Mixed test"
+            }
+        ],
+        "aiModels": [
+            {
+                "name": "OpenAI 3.5 Turbo",
+                "ai": "OpenAI",
+                "model": "gpt-3.5-turbo"
+            },
+            {
+                "name": "OpenAI 4 Turbo",
+                "ai": "OpenAI",
+                "model": "gpt-4-turbo"
+            },
+            {
+                "name": "OpenAI 4 Omni",
+                "ai": "OpenAI",
+                "model": "gpt-4o"
+            },
+            {
+                "name": "DeepSeek",
+                "ai": "DeepSeek",
+                "model": "deepseek-chat"
+            },
+            {
+                "name": "Gemini 1.5 Flash",
+                "ai": "Gemini",
+                "model": "gemini-1.5-flash"
+            },
+            {
+                "name": "Gemini 2.0 Flash-Lite",
+                "ai": "Gemini",
+                "model": "gemini-2.0-flash-lite"
+            }
+        ],
+        "difficultyLevels": [
+            "Junior",
+            "Middle",
+            "Senior"
+        ],
+        "temperatureRange": {
+            "min": 0,
+            "max": 1
+        },
+        "maxTokensRange": {
+            "min": 100,
+            "max": 1000
+        },
+        "testDurations": [
+            10,
+            20,
+            30,
+            40,
+            50
+        ],
+        "resultOptions": [
+            {
+                "name": "general",
+                "details": "General recommendations for further learning"
+            },
+            {
+                "name": "vacancy",
+                "details": "Recommendation to apply for the vacancy"
+            },
+            {
+                "name": "certificat",
+                "details": "Certification achievement"
+            }
+        ],
+        "defaults": {
+            "communicationMode": "interview",
+            "testType": "single",
+            "aiModel": "gpt-4-turbo",
+            "difficultyLevel": "Middle",
+            "temperature": 0.7,
+            "maxTokens": 256,
+            "testDuration": 20,
+            "resultOptions": [
+                "general",
+                "vacancy",
+                "certificat"
+            ]
+        }
+    },
+    "info": {
+        "evaluate": "This button analyzes the vacancy description and suggests a preparation level."
+    },
+    "errors": {
+        "evaluation_requirement": "Please fill in either Vacancy Name and Vacancy Description."
+    },
+    "debug": {
+
+    }
+}
