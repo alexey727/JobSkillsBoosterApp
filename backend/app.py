@@ -259,7 +259,16 @@ def generate_certificate(id):
 
     print(interview_data)
 
-    prompt = 'apple certificate'
+    prompt = (
+        "Flat 2D illustration of a professional certificate with clean elegant design. "
+        "In the center top, large bold text: \"JobSkillsBooster\". "
+        "Below it, in very large letters: \"Certificate\". "
+        f"Below that, in big letters: \"{interview_data['settings']['candidateName']}\". "
+        "Under the name, a smaller text in English: "
+        "\"Certificate issued after successfully completing the test for the position "
+        f"{interview_data['settings']['vacancyName']} in the company COMPANY NAME\". "
+        "The design should look modern, minimalistic, and official, with soft background colors and subtle decorative borders."
+    )
 
     try:
         data = image_service.generate_and_save_certificate(prompt)
