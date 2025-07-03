@@ -10,19 +10,7 @@ import {
   ListItemText,
 } from "@mui/material";
 import Image from "next/image";
-
-type Config = {
-  about: string;
-  settings: {
-    communicationModes: { name: string; details: string }[];
-    testTypes: { type: string; name: string }[];
-    aiModels: string[];
-    difficultyLevels: string[];
-    temperatureRange: { min: number; max: number };
-    testDurations: number[];
-    resultOptions: { name: string; details: string }[];
-  };
-};
+import { Config } from "@/types/types";
 
 export default function Home() {
   const [config, setConfig] = useState<Config | null>(null);
@@ -79,8 +67,8 @@ export default function Home() {
       <Box maxWidth="400px" width="100%" mt={1}>
         <List dense>
           {config.settings.aiModels.map((model) => (
-            <ListItem key={model}>
-              <ListItemText primary={model.details} secondary={model.name} />
+            <ListItem key={model.name}>
+              <ListItemText primary={model.model} />
             </ListItem>
           ))}
         </List>

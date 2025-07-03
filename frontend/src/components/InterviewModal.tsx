@@ -64,6 +64,7 @@ export default function InterviewModal({
           console.log("Interview started, timestamp:", result.timestamp);
           setInterviewId(result.timestamp);
           setCurrentQuestionNumber(1);
+          setInterviewFinished(false);
         } catch (error) {
           console.error("Failed to start interview:", error);
         }
@@ -92,7 +93,7 @@ export default function InterviewModal({
 
       fetchQuestion();
     }
-  }, [open, interviewId, currentQuestionNumber]);
+  }, [open, currentQuestionNumber]);
 
   useEffect(() => {
     if (open && interviewFinished) {
@@ -112,7 +113,7 @@ export default function InterviewModal({
           0
         );
         setTotalPoints(points);
-        
+
         } catch (error) {
           console.error("Failed to load question:", error);
         }
@@ -129,6 +130,7 @@ export default function InterviewModal({
   const handleConfirmClose = () => {
     setConfirmOpen(false);
     setCurrentQuestion(null);
+    setCurrentQuestionNumber(1);
     onClose();
   };
 

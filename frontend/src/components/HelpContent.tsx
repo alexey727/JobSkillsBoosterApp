@@ -9,20 +9,7 @@ import {
   ListItemText,
   CircularProgress,
 } from "@mui/material";
-
-type Config = {
-  about: string;
-  settings: {
-    communicationModes: { name: string; details: string, direktAnswer: boolean }[];
-    testTypes: { type: string; name: string }[];
-    aiModels: string[];
-    difficultyLevels: string[];
-    temperatureRange: { min: number; max: number };
-    maxTokensRange: { min: number; max: number };
-    testDurations: number[];
-    resultOptions: { name: string; details: string }[];
-  };
-};
+import { Config } from "@/types/types";
 
 export default function HelpContent() {
   const [config, setConfig] = useState<Config | null>(null);
@@ -30,7 +17,9 @@ export default function HelpContent() {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/config`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/config`
+        );
         const data = await res.json();
         setConfig(data);
       } catch (error) {
@@ -64,26 +53,28 @@ export default function HelpContent() {
       <Typography variant="h6" mt={2}>
         AI Models
       </Typography>
-      <List dense>
-        {settings.aiModels.map((model) => (
-          <ListItem key={model}>
-            <ListItemText
-        primary={model.name}
-        secondary={`${model.ai} — ${model.model}`}
-      />
-          </ListItem>
-        ))}
-      </List>
+<List dense>
+  {settings.aiModels.map((model) => (
+    <ListItem key={model.model}>
+      <ListItemText primary={model.name}
+        secondary={`${model.ai} — ${model.model}`}/>
+    </ListItem>
+  ))}
+</List>
+
 
       <Typography variant="h6" mt={2}>
         Communication Modes
       </Typography>
       <List dense>
         {settings.communicationModes.map((mode) => (
-          <ListItem key={mode.name} >
-            <ListItemText primary={mode.details} 
-              secondary={`Type: ${mode.name} , Direct Answer: ${mode.directAnswer ? "Yes" : "No"}`}
-            /> 
+          <ListItem key={mode.name}>
+            <ListItemText
+              primary={mode.details}
+              secondary={`Type: ${mode.name} , Direct Answer: ${
+                mode.directAnswer ? "Yes" : "No"
+              }`}
+            />
           </ListItem>
         ))}
       </List>
@@ -136,7 +127,8 @@ export default function HelpContent() {
         Temperature Range
       </Typography>
       <Typography>
-        Min: {settings.temperatureRange.min}, Max: {settings.temperatureRange.max}
+        Min: {settings.temperatureRange.min}, Max:{" "}
+        {settings.temperatureRange.max}
       </Typography>
 
       <Typography variant="h6" mt={4}>

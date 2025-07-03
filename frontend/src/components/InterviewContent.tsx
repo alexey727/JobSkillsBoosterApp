@@ -13,26 +13,12 @@ import {
   FormControl,
   Snackbar,
   Alert,
+  Tooltip
 } from "@mui/material";
 import SettingsPanel from "@/components/SettingsPanel";
 import DebugBlock from "@/components/DebugBlock";
 import InterviewModal from "@/components/InterviewModal";
-import { Tooltip } from "@mui/material";
-
-type Config = {
-  about: string;
-  settings: {
-    communicationModes: { name: string; details: string }[];
-    testTypes: { type: string; name: string }[];
-    aiModels: { name: string; ai: string; model: string }[];
-    difficultyLevels: string[];
-    temperatureRange: { min: number; max: number };
-    testDurations: number[];
-    resultOptions: { name: string; details: string }[];
-  };
-  info: { evaluate: string };
-  errors: { evaluation_requirement: string };
-};
+import { Config } from "@/types/types";
 
 export default function InterviewForm() {
   const [config, setConfig] = useState<Config | null>(null);
@@ -46,8 +32,7 @@ export default function InterviewForm() {
     "Senior Fullstack Developer (Focus on Frontend) – Platform Team"
   );
   // const [preparationLevel, setPreparationLevel] = useState("");
-  const [vacancyDescription, setVacancyDescription] =
-    useState(`
+  const [vacancyDescription, setVacancyDescription] = useState(`
       Are you experienced in front-end development with React and proficient in full-stack development with Python on the backend? Are you looking for a new challenge where you can not only write code but also use your technical expertise to design sustainable and scalable software architecture? Then join our Platform team as a Senior Full-Stack Developer (focus on front-end).
 
 Our Platform team is part of CONTACT Software's internal software and product development and forms the technological foundation for our entire product portfolio. Your work has a direct impact on the long-term development of our software products. As a Senior Full-Stack Developer, you will take responsibility for key technical components, drive innovation, and actively shape our system architecture. We rely on modern web technologies and place great value on high-quality, future-proof software solutions with long-term added value for our customers. Together, we will further develop the user interface for enterprise systems and set technological standards.
@@ -233,185 +218,170 @@ Prepare an interview based on the following:
   };
 
   return (
-    <Box
-      display="flex"
-      gap={2}
-      flexWrap="wrap"
-      alignItems="flex-start"
-      padding="1rem"
-    >
-      {/* Left: Form */}
-      <Box flex={1} minWidth="300px">
-        <Typography variant="h5" gutterBottom>
-          Interview
-        </Typography>
+      <Box
+        display="flex"
+        gap={2}
+        flexWrap="wrap"
+        alignItems="flex-start"
+        padding="1rem"
+      >
+        {/* Left: Form */}
+        <Box flex={1} minWidth="300px">
+          <Typography variant="h5" gutterBottom>
+            Interview
+          </Typography>
 
-        <TextField
-          label="Candidate Name"
-          value={candidateName}
-          onChange={(e) => setCandidateName(e.target.value)}
-          fullWidth
-          margin="normal"
-        />
-
-        <Box display="flex" gap={2} marginY={2}>
           <TextField
-            label="Company Name"
-            value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)}
+            label="Candidate Name"
+            value={candidateName}
+            onChange={(e) => setCandidateName(e.target.value)}
             fullWidth
             margin="normal"
           />
 
+          <Box display="flex" gap={2} marginY={2}>
+            <TextField
+              label="Company Name"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+
+            <TextField
+              label="Vacancy Name"
+              value={vacancyName}
+              onChange={(e) => setVacancyName(e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+          </Box>
+
           <TextField
-            label="Vacancy Name"
-            value={vacancyName}
-            onChange={(e) => setVacancyName(e.target.value)}
+            label="Vacancy Description"
+            value={vacancyDescription}
+            onChange={(e) => setVacancyDescription(e.target.value)}
+            multiline
+            rows={8}
             fullWidth
             margin="normal"
           />
-        </Box>
 
-        <TextField
-          label="Vacancy Description"
-          value={vacancyDescription}
-          onChange={(e) => setVacancyDescription(e.target.value)}
-          multiline
-          rows={8}
-          fullWidth
-          margin="normal"
-        />
+          <Box display="flex" gap={2} alignItems="center" marginTop={2}>
+            <FormControl fullWidth>
+              <InputLabel id="preparation-level-label">
+                Preparation Level
+              </InputLabel>
+              <Select
+                labelId="preparation-level-label"
+                value={selectedDifficulty}
+                label="Preparation Level"
+                onChange={(e) => setSelectedDifficulty(e.target.value)}
+              >
+                {settings.difficultyLevels.map((level) => (
+                  <MenuItem key={level} value={level}>
+                    {level}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-        <Box display="flex" gap={2} alignItems="center" marginTop={2}>
-          <FormControl fullWidth>
-            <InputLabel id="preparation-level-label">
-              Preparation Level
-            </InputLabel>
-            <Select
-              labelId="preparation-level-label"
-              value={selectedDifficulty}
-              label="Preparation Level"
-              onChange={(e) => setSelectedDifficulty(e.target.value)}
-            >
-              {settings.difficultyLevels.map((level) => (
-                <MenuItem key={level} value={level}>
-                  {level}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+            <Tooltip title={config.info.evaluate}>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={handleEvaluateClick}
+              >
+                Evaluate
+              </Button>
+            </Tooltip>
+          </Box>
 
-          <Tooltip title={config.info.evaluate}>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={handleEvaluateClick}
-            >
-              Evaluate
-            </Button>
-          </Tooltip>
-        </Box>
-
-        <Button
-          variant="contained"
-          color="primary"
-          size="large"
-          sx={{ mt: 2 }}
-          onClick={() => setModalOpen(true)}
-          disabled={!vacancyDescription.trim()}
-        >
-          Start Interview
-        </Button>
-
-        {process.env.NEXT_PUBLIC_MODE === "debug" && (
-          <DebugBlock
-            data={{
-              candidateName,
-              companyName,
-              vacancyName,
-              vacancyDescription,
-              selectedCommunication,
-              selectedTestType,
-              selectedAI,
-              selectedAIModel,
-              selectedDifficulty,
-              temperature,
-              maxTokens,
-              testDuration,
-              selectedResults,
-              prompt,
-            }}
-          />
-        )}
-
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={4000}
-          onClose={() => setSnackbarOpen(false)}
-          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        >
-          <Alert
-            onClose={() => setSnackbarOpen(false)}
-            severity="warning"
-            sx={{ width: "100%" }}
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            sx={{ mt: 2 }}
+            onClick={() => setModalOpen(true)}
+            disabled={!vacancyDescription.trim()}
           >
-            {snackbarMessage}
-          </Alert>
-        </Snackbar>
+            Start Interview
+          </Button>
+
+          {process.env.NEXT_PUBLIC_MODE === "debug" && (
+            <DebugBlock
+              data={{
+                candidateName,
+                companyName,
+                vacancyName,
+                vacancyDescription,
+                selectedCommunication,
+                selectedTestType,
+                selectedAI,
+                selectedAIModel,
+                selectedDifficulty,
+                temperature,
+                maxTokens,
+                testDuration,
+                selectedResults,
+                prompt,
+              }}
+            />
+          )}
+
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={4000}
+            onClose={() => setSnackbarOpen(false)}
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          >
+            <Alert
+              onClose={() => setSnackbarOpen(false)}
+              severity="warning"
+              sx={{ width: "100%" }}
+            >
+              {snackbarMessage}
+            </Alert>
+          </Snackbar>
+        </Box>
+        <SettingsPanel
+          settings={settings}
+          selectedCommunication={selectedCommunication}
+          setSelectedCommunication={setSelectedCommunication}
+          selectedTestType={selectedTestType}
+          setSelectedTestType={setSelectedTestType}
+          selectedAIModel={selectedAIModel}
+          setSelectedAIModel={setSelectedAIModel}
+          selectedDifficulty={selectedDifficulty}
+          setSelectedDifficulty={setSelectedDifficulty}
+          temperature={temperature}
+          setTemperature={setTemperature}
+          maxTokens={maxTokens}
+          setMaxTokens={setMaxTokens}
+          testDuration={testDuration}
+          setTestDuration={setTestDuration}
+          selectedResults={selectedResults}
+          handleResultChange={handleResultChange}
+        />
+        <InterviewModal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          interviewOptions={{
+            selectedCommunication,
+            selectedTestType,
+            selectedAI,
+            selectedAIModel,
+            temperature,
+            maxTokens,
+            testDuration,
+            selectedResults,
+            candidateName,
+            vacancyName,
+            vacancyDescription,
+            selectedDifficulty,
+          }}
+        />
+
       </Box>
-      <SettingsPanel
-        settings={settings}
-        selectedCommunication={selectedCommunication}
-        setSelectedCommunication={setSelectedCommunication}
-        selectedTestType={selectedTestType}
-        setSelectedTestType={setSelectedTestType}
-        selectedAIModel={selectedAIModel}
-        setSelectedAIModel={setSelectedAIModel}
-        selectedDifficulty={selectedDifficulty}
-        setSelectedDifficulty={setSelectedDifficulty}
-        temperature={temperature}
-        setTemperature={setTemperature}
-        maxTokens={maxTokens}
-        setMaxTokens={setMaxTokens}
-        testDuration={testDuration}
-        setTestDuration={setTestDuration}
-        selectedResults={selectedResults}
-        handleResultChange={handleResultChange}
-      />
-      <InterviewModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        interviewOptions={{
-          selectedCommunication,
-          selectedTestType,
-          selectedAI,
-          selectedAIModel,
-          temperature,
-          maxTokens,
-          testDuration,
-          selectedResults,
-          candidateName,
-          vacancyName,
-          vacancyDescription,
-          selectedDifficulty,
-        }}
-      />
-      selectedCommunication={selectedCommunication}
-      setSelectedCommunication={setSelectedCommunication}
-      selectedTestType={selectedTestType}
-      setSelectedTestType={setSelectedTestType}
-      selectedAIModel={selectedAIModel}
-      setSelectedAIModel={setSelectedAIModel}
-      selectedDifficulty={selectedDifficulty}
-      setSelectedDifficulty={setSelectedDifficulty}
-      temperature={temperature}
-      setTemperature={setTemperature}
-      maxTokens={maxTokens}
-      setMaxTokens={setMaxTokens}
-      testDuration={testDuration}
-      setTestDuration={setTestDuration}
-      selectedResults={selectedResults}
-      handleResultChange={handleResultChange}
-    </Box>
   );
 }
