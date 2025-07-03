@@ -460,7 +460,19 @@ export default function InterviewModal({
                           % correct answers.
                         </Typography>
 
-                        {certificate?.img_path && (
+                        { !certificate && (
+                          <Box
+                            mt={3}
+                            display="flex"
+                            flexDirection="column"
+                            alignItems="center"
+                          >
+                            <CircularProgress />
+                            <Typography mt={1}>We are now signing your certificate...</Typography>
+                          </Box>
+                        )}
+
+                        { certificate?.img_path && (
                           <>
                             <Box
                               mt={2}
@@ -493,7 +505,6 @@ export default function InterviewModal({
                           </>
                         )}
 
-                        
                       </Box>
                     )}
                 </>
