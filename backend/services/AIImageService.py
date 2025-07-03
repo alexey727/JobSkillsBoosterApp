@@ -6,7 +6,7 @@ from PIL import Image
 from io import BytesIO
 
 class AIImageService:
-    def __init__(self, api_key: str, output_dir: str = "generated_pdfs"):
+    def __init__(self, api_key: str, output_dir: str = "data/generated_pdfs"):
         self.client = OpenAI(api_key=api_key)
         self.output_dir = output_dir
         os.makedirs(output_dir, exist_ok=True)

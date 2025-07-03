@@ -228,6 +228,24 @@ def save_answer():
         print("Error:", e)
         return jsonify({"error": "Internal Server Error"}), 500
 
+@app.route("/api/interview/get-result/<id>", methods=["GET"])
+def get_result(id):
+    try:
+        filename = f"{id}.json"
+        filepath = os.path.join(STORAGE_DIR, filename)
+
+        if not os.path.exists(filepath):
+            return jsonify({"error": "Interview not found"}), 404
+
+        with open(filepath, "r", encoding="utf-8") as f:
+            interview_data = json.load(f)
+
+        return jsonify(interview_data), 200
+
+    except Exception as e:
+        print("Error:", e)
+        return jsonify({"error": "Internal Server Error"}), 500
+
 
 
 @app.route("/api/generate_image_pdf", methods=["POST"])

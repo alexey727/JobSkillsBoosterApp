@@ -13,6 +13,7 @@ import {
   RadioGroup,
   Radio,
   FormControlLabel,
+  CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -29,6 +30,9 @@ export default function InterviewModal({
 }: Props) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [interviewId, setInterviewId] = useState(false);
+  const [interviewFinished, setInterviewFinished] = useState(false);
+  const [currentQuestionNumber, setCurrentQuestionNumber] = useState(0);
+  const [totalPoints, setTotalPoints] = useState<number | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState<null | {
     question: string;
     answerOptions: string[];
@@ -59,6 +63,7 @@ export default function InterviewModal({
           const result = await res.json();
           console.log("Interview started, timestamp:", result.timestamp);
           setInterviewId(result.timestamp);
+          setCurrentQuestionNumber(1);
         } catch (error) {
           console.error("Failed to start interview:", error);
         }
@@ -69,7 +74,7 @@ export default function InterviewModal({
   }, [open, interviewOptions]);
 
   useEffect(() => {
-    if (open && interviewId) {
+    if (open && currentQuestionNumber) {
       const fetchQuestion = async () => {
         try {
           const res = await fetch(
@@ -87,7 +92,35 @@ export default function InterviewModal({
 
       fetchQuestion();
     }
-  }, [open, interviewId]);
+  }, [open, interviewId, currentQuestionNumber]);
+
+  useEffect(() => {
+    if (open && interviewFinished) {
+      const fetchInterview = async () => {
+        try {
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/interview/get-result/${interviewId}`
+          );
+          if (!res.ok) {
+            throw new Error(`Error: ${res.status}`);
+          }
+          const data = await res.json();
+          console.log(data.questions);
+
+          const points = data.questions.reduce(
+          (acc: number, q: any) => acc + (q.point || 0),
+          0
+        );
+        setTotalPoints(points);
+        
+        } catch (error) {
+          console.error("Failed to load question:", error);
+        }
+      };
+
+      fetchInterview();
+    }
+  }, [open, interviewId, interviewFinished]);
 
   const handleRequestClose = () => {
     setConfirmOpen(true);
@@ -221,7 +254,6 @@ export default function InterviewModal({
                   </RadioGroup>
                 </Box>
               ) : (
-                // Если testType не выбран - кнопки
                 <Box display="flex" flexDirection="column" gap={1}>
                   {currentQuestion.answerOptions.map((option, index) => (
                     <Button
@@ -241,44 +273,71 @@ export default function InterviewModal({
             </Box>
           )}
 
-          <Box mt={2} textAlign="center">
-            <Button
-              disabled={!selectedAnswer}
-              variant="contained"
-              color="primary"
-              onClick={async () => {
-                try {
-                  const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/question/answer`,
-                    {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify({
-                        interviewId,
-                        answer: selectedAnswer,
-                      }),
+          {!currentQuestion && !interviewFinished && (
+            <Box mt={3} display="flex" justifyContent="center">
+              <CircularProgress />
+            </Box>
+          )}
+
+          {!interviewFinished && (
+            <Box mt={2} textAlign="center">
+              <Button
+                disabled={!selectedAnswer}
+                variant="contained"
+                color="primary"
+                onClick={async () => {
+                  try {
+                    const res = await fetch(
+                      `${process.env.NEXT_PUBLIC_API_URL}/api/question/answer`,
+                      {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          interviewId,
+                          answer: selectedAnswer,
+                        }),
+                      }
+                    );
+
+                    if (!res.ok) {
+                      throw new Error(`Error: ${res.status}`);
                     }
-                  );
 
-                  if (!res.ok) {
-                    throw new Error(`Error: ${res.status}`);
+                    const data = await res.json();
+                    console.log("Answer saved:", data);
+
+                    setSelectedAnswer(null);
+                    setCurrentQuestion(null);
+                    if (currentQuestionNumber < interviewOptions.testDuration) {
+                      setCurrentQuestionNumber(currentQuestionNumber + 1);
+                    } else {
+                      setInterviewFinished(true);
+                    }
+                  } catch (error) {
+                    console.error("Failed to send answer:", error);
                   }
+                }}
+              >
+                Send Answer
+              </Button>
+            </Box>
+          )}
 
-                  const data = await res.json();
-                  console.log("Answer saved:", data);
-
-
-                  setSelectedAnswer(null);
-                } catch (error) {
-                  console.error("Failed to send answer:", error);
-                }
-              }}
-            >
-              Send Answer
-            </Button>
-          </Box>
+          {interviewFinished && (
+            <Box mt={3} textAlign="center">
+              <Typography variant="h6" gutterBottom>
+                Interview Finished
+              </Typography>
+              {totalPoints !== null && (
+                <Typography variant="body1">
+                  You scored {totalPoints} out of{" "}
+                  {interviewOptions.testDuration}
+                </Typography>
+              )}
+            </Box>
+          )}
         </DialogContent>
 
         <DialogActions>
@@ -292,7 +351,7 @@ export default function InterviewModal({
         </DialogActions>
       </Dialog>
 
-      {/* Диалог подтверждения */}
+      {/* Dialog confirm */}
       <Dialog
         open={confirmOpen}
         onClose={(_, reason) => {

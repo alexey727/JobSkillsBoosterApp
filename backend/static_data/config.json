@@ -82,6 +82,7 @@
             "max": 1000
         },
         "testDurations": [
+            5,
             10,
             20,
             30,
@@ -109,7 +110,7 @@
             "difficultyLevel": "Middle",
             "temperature": 0.7,
             "maxTokens": 256,
-            "testDuration": 20,
+            "testDuration": 5,
             "resultOptions": [
                 "general",
                 "vacancy",
