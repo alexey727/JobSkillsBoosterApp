@@ -18,8 +18,7 @@ export type Config = {
   errors: { evaluation_requirement: string };
 };
 
-export type Interview = {
-  settings: {
+export type InterviewSettings = {
     selectedCommunication: string;
     selectedTestType: string;
     selectedAI: string;
@@ -32,7 +31,11 @@ export type Interview = {
     vacancyName: string;
     vacancyDescription: string;
     selectedDifficulty: string;
-  };
+};
+
+
+export type Interview = {
+  settings: InterviewSettings;
   questions: {
     id: number;
     question: string;

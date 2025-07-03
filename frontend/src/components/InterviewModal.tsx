@@ -16,12 +16,12 @@ import {
   CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { Interview } from "@/types/types";
+import { Interview, InterviewSettings } from "@/types/types";
 
 type Props = {
   open: boolean;
   onClose: () => void;
-  interviewOptions: any;
+  interviewOptions: InterviewSettings;
 };
 
 export default function InterviewModal({
@@ -35,6 +35,7 @@ export default function InterviewModal({
   const [currentQuestionNumber, setCurrentQuestionNumber] = useState(0);
   const [totalPoints, setTotalPoints] = useState<number | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState<null | {
+    id: string;
     question: string;
     answerOptions: string[];
     type: string;
@@ -47,6 +48,7 @@ export default function InterviewModal({
 
   useEffect(() => {
     if (open && interviewOptions) {
+      resetInterviewState();
       const startInterview = async () => {
         try {
           const res = await fetch(
@@ -133,8 +135,7 @@ export default function InterviewModal({
 
   const handleConfirmClose = () => {
     setConfirmOpen(false);
-    setCurrentQuestion(null);
-    setCurrentQuestionNumber(1);
+    resetInterviewState();
     onClose();
   };
 
@@ -150,6 +151,16 @@ export default function InterviewModal({
       return;
     }
     handleRequestClose();
+  };
+
+  const resetInterviewState = () => {
+    setInterviewId(false);
+    setInterviewFinished(false);
+    setCurrentQuestionNumber(0);
+    setCurrentQuestion(null);
+    setSelectedAnswer(null);
+    setInterviewResults(null);
+    setTotalPoints(null);
   };
 
   const infoSx = {
@@ -168,7 +179,17 @@ export default function InterviewModal({
 
   return (
     <>
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        fullWidth
+        maxWidth="md"
+        PaperProps={{
+          sx: {
+            minHeight: "80%",
+          },
+        }}
+      >
         <DialogTitle
           sx={{
             display: "flex",
@@ -280,12 +301,18 @@ export default function InterviewModal({
           )}
 
           {!currentQuestion && !interviewFinished && (
-            <Box mt={3} display="flex" justifyContent="center">
+            <Box
+              mt={3}
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+            >
               <CircularProgress />
+              <Typography mt={1}>The question is being formed...</Typography>
             </Box>
           )}
 
-          {!interviewFinished && (
+          {!interviewFinished && currentQuestion && (
             <Box mt={2} textAlign="center">
               <Button
                 disabled={!selectedAnswer}
@@ -346,49 +373,82 @@ export default function InterviewModal({
 
               {interviewResults && (
                 <>
-                <Box display="flex" flexDirection="column" gap={2} mt={2}>
-                  {interviewResults.questions.map((q) => (
-                    <Box
-                      key={q.id}
-                      p={2}
-                      bgcolor="#f5f5f5"
-                      borderRadius={2}
-                      textAlign="left"
-                    >
-                      <Typography
-                        variant="subtitle1"
-                        fontWeight="bold"
-                        gutterBottom
+                  <Box display="flex" flexDirection="column" gap={2} mt={2}>
+                    {interviewResults.questions.map((q) => (
+                      <Box
+                        key={q.id}
+                        p={2}
+                        bgcolor="#f5f5f5"
+                        borderRadius={2}
+                        textAlign="left"
                       >
-                        {q.id}. {q.question}
-                      </Typography>
-                      <Box pl={2}>
-                        {q.answerOptions.map((option, idx) => (
-                          <Typography
-                            key={idx}
-                            variant="body2"
-                            sx={{
-                              fontWeight:
-                                option === q.answer ? "bold" : "normal",
-                              color:
-                                option === q.rightAnswer
-                                  ? "green"
-                                  : option === q.answer
-                                  ? "red"
-                                  : "inherit",
-                            }}
-                          >
-                            {option}
-                          </Typography>
-                        ))}
+                        <Typography
+                          variant="subtitle1"
+                          fontWeight="bold"
+                          gutterBottom
+                        >
+                          {q.id}. {q.question}
+                        </Typography>
+                        <Box pl={2}>
+                          {q.answerOptions.map((option, idx) => (
+                            <Typography
+                              key={idx}
+                              variant="body2"
+                              sx={{
+                                fontWeight:
+                                  option === q.answer ? "bold" : "normal",
+                                color:
+                                  option === q.rightAnswer
+                                    ? "green"
+                                    : option === q.answer
+                                    ? "red"
+                                    : "inherit",
+                              }}
+                            >
+                              {option}
+                            </Typography>
+                          ))}
+                        </Box>
                       </Box>
-                    </Box>
-                  ))}
-                </Box>
-                <Box gap={2} mt={2} p={2} bgcolor="#C2DAB8" minHeight={'100px'}
-                      borderRadius={2}>
-                  TODO: AI recommendations to improve your skills
-                </Box>
+                    ))}
+                  </Box>
+                  <Box
+                    gap={2}
+                    mt={2}
+                    p={2}
+                    bgcolor="#C2DAB8"
+                    minHeight={"100px"}
+                    borderRadius={2}
+                  >
+                    TODO: AI recommendations to improve your skills
+                  </Box>
+
+                  {totalPoints !== null &&
+                    totalPoints / interviewOptions.testDuration >= 0.8 && (
+                      <Box
+                        mt={2}
+                        p={2}
+                        bgcolor="#E0F7FA"
+                        borderRadius={2}
+                        textAlign="center"
+                      >
+                        <Typography
+                          variant="h6"
+                          fontWeight="bold"
+                          color="primary"
+                        >
+                          🎉 Certificate of Achievement
+                        </Typography>
+                        <Typography variant="body2" mt={1}>
+                          Congratulations! You have successfully passed the test
+                          with{" "}
+                          {Math.round(
+                            (totalPoints / interviewOptions.testDuration) * 100
+                          )}
+                          % correct answers.
+                        </Typography>
+                      </Box>
+                    )}
                 </>
               )}
             </Box>
@@ -396,13 +456,26 @@ export default function InterviewModal({
         </DialogContent>
 
         <DialogActions>
-          <Button
-            onClick={handleRequestClose}
-            color="primary"
-            variant="contained"
-          >
-            Break Interview
-          </Button>
+          {interviewFinished ? (
+            <Button
+              onClick={() => {
+                resetInterviewState();
+                onClose();
+              }}
+              color="primary"
+              variant="contained"
+            >
+              Close
+            </Button>
+          ) : (
+            <Button
+              onClick={handleRequestClose}
+              color="primary"
+              variant="contained"
+            >
+              Break Interview
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
 
