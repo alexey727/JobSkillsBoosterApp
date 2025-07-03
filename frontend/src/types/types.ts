@@ -48,3 +48,9 @@ export type Interview = {
   }[];
 };
 
+export type Certificate = {
+  message: string;
+  img_path: string;
+  pdf_path: string;
+};
+

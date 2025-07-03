@@ -246,7 +246,32 @@ def get_result(id):
         print("Error:", e)
         return jsonify({"error": "Internal Server Error"}), 500
 
+@app.route("/api/generate_certificate/<id>", methods=["GET"])
+def generate_certificate(id):
+    filename = f"{id}.json"
+    filepath = os.path.join(STORAGE_DIR, filename)
 
+    if not os.path.exists(filepath):
+        return jsonify({"error": "Interview not found"}), 404
+
+    with open(filepath, "r", encoding="utf-8") as f:
+        interview_data = json.load(f)
+
+    print(interview_data)
+
+    prompt = 'apple certificate'
+
+    try:
+        data = image_service.generate_and_save_certificate(prompt)
+        print(data)
+        return jsonify({
+            "message": "Certificate generated",
+            "pdf_path": data["pdf"],
+            "img_path": data["img"]
+        })
+    except Exception as e:
+        print("Error generating image:", e)
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/api/generate_image_pdf", methods=["POST"])
 def generate_image_pdf():

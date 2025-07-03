@@ -16,7 +16,8 @@ import {
   CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { Interview, InterviewSettings } from "@/types/types";
+import { Interview, InterviewSettings, Certificate } from "@/types/types";
+import Image from "next/image";
 
 type Props = {
   open: boolean;
@@ -45,6 +46,7 @@ export default function InterviewModal({
   const [interviewResults, setInterviewResults] = useState<Interview | null>(
     null
   );
+  const [certificate, setCertificate] = useState<Certificate | null>(null);
 
   useEffect(() => {
     if (open && interviewOptions) {
@@ -120,6 +122,15 @@ export default function InterviewModal({
             0
           );
           setTotalPoints(points);
+
+          if (points >= 0.8 * interviewOptions.testDuration) {
+            const certRes = await fetch(
+              `${process.env.NEXT_PUBLIC_API_URL}/api/generate_certificate/${interviewId}`
+            );
+            if (!certRes.ok) throw new Error(`Error: ${certRes.status}`);
+            const data = await certRes.json();
+            setCertificate(data);
+          }
         } catch (error) {
           console.error("Failed to load question:", error);
         }
@@ -161,6 +172,7 @@ export default function InterviewModal({
     setSelectedAnswer(null);
     setInterviewResults(null);
     setTotalPoints(null);
+    setCertificate(null);
   };
 
   const infoSx = {
@@ -447,6 +459,41 @@ export default function InterviewModal({
                           )}
                           % correct answers.
                         </Typography>
+
+                        {certificate?.img_path && (
+                          <>
+                            <Box
+                              mt={2}
+                              mb={2}
+                              display="flex"
+                              justifyContent="center"
+                            >
+                              <Image
+                                src={`${process.env.NEXT_PUBLIC_API_URL}${certificate.img_path}`}
+                                alt="Certificate preview"
+                                width={500} 
+                                height={500}
+                                style={{
+                                  borderRadius: "8px",
+                                  boxShadow: "0 0 10px rgba(0,0,0,0.2)",
+                                  height: "auto",
+                                }}
+                              />
+                            </Box>
+
+                            <a
+                              href={`${process.env.NEXT_PUBLIC_API_URL}${certificate?.pdf_path}`}
+                              download="certificate.pdf"
+                              target="_blank"
+                            >
+                              <Button variant="contained" color="primary">
+                                Download Certificate
+                              </Button>
+                            </a>
+                          </>
+                        )}
+
+                        
                       </Box>
                     )}
                 </>
