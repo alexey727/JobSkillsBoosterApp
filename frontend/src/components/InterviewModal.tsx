@@ -16,6 +16,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { Interview } from "@/types/types";
 
 type Props = {
   open: boolean;
@@ -40,6 +41,9 @@ export default function InterviewModal({
     answer: string;
   }>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [interviewResults, setInterviewResults] = useState<Interview | null>(
+    null
+  );
 
   useEffect(() => {
     if (open && interviewOptions) {
@@ -107,13 +111,13 @@ export default function InterviewModal({
           }
           const data = await res.json();
           console.log(data.questions);
+          setInterviewResults(data);
 
           const points = data.questions.reduce(
-          (acc: number, q: any) => acc + (q.point || 0),
-          0
-        );
-        setTotalPoints(points);
-
+            (acc: number, q: any) => acc + (q.point || 0),
+            0
+          );
+          setTotalPoints(points);
         } catch (error) {
           console.error("Failed to load question:", error);
         }
@@ -332,11 +336,60 @@ export default function InterviewModal({
               <Typography variant="h6" gutterBottom>
                 Interview Finished
               </Typography>
+
               {totalPoints !== null && (
-                <Typography variant="body1">
-                  You scored {totalPoints} out of{" "}
+                <Typography variant="body1" mb={2}>
+                  You scored {totalPoints} points out of{" "}
                   {interviewOptions.testDuration}
                 </Typography>
+              )}
+
+              {interviewResults && (
+                <>
+                <Box display="flex" flexDirection="column" gap={2} mt={2}>
+                  {interviewResults.questions.map((q) => (
+                    <Box
+                      key={q.id}
+                      p={2}
+                      bgcolor="#f5f5f5"
+                      borderRadius={2}
+                      textAlign="left"
+                    >
+                      <Typography
+                        variant="subtitle1"
+                        fontWeight="bold"
+                        gutterBottom
+                      >
+                        {q.id}. {q.question}
+                      </Typography>
+                      <Box pl={2}>
+                        {q.answerOptions.map((option, idx) => (
+                          <Typography
+                            key={idx}
+                            variant="body2"
+                            sx={{
+                              fontWeight:
+                                option === q.answer ? "bold" : "normal",
+                              color:
+                                option === q.rightAnswer
+                                  ? "green"
+                                  : option === q.answer
+                                  ? "red"
+                                  : "inherit",
+                            }}
+                          >
+                            {option}
+                          </Typography>
+                        ))}
+                      </Box>
+                    </Box>
+                  ))}
+                </Box>
+                <Box gap={2} mt={2} p={2} bgcolor="#C2DAB8" minHeight={'100px'}
+                      borderRadius={2}>
+                  TODO: AI recommendations to improve your skills
+                </Box>
+                </>
               )}
             </Box>
           )}
