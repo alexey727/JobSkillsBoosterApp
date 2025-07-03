@@ -42,17 +42,61 @@ export default function InterviewForm() {
   // Form state
   const [candidateName, setCandidateName] = useState("Best Candidate");
   const [companyName, setCompanyName] = useState("DreamWork");
-  const [vacancyName, setVacancyName] = useState("Senior Frontend Developer (m/w/d)");
+  const [vacancyName, setVacancyName] = useState(
+    "Senior Fullstack Developer (Focus on Frontend) – Platform Team"
+  );
   // const [preparationLevel, setPreparationLevel] = useState("");
-const [vacancyDescription, setVacancyDescription] = useState(`Mit gyde verfolgen wir die Mission, die Zukunft des Lernens für Unternehmen und Talente zu gestalten.
-Wir sind davon überzeugt, dass eine game-changing Lernerfahrung extrem niedrigschwellig sein und sowohl die intellektuellen als auch die emotionalen Herausforderungen der teilnehmenden Talente ansprechen muss.
-Um dies zu erreichen, kombinieren wir App-basiertes Micro-Learning und persönliche Reflexionsübungen mit spannenden Peer-Coaching-Interaktionen.
-Wir sind auf der Suche nach talentierten und leidenschaftlichen Menschen, die Teil unserer Mission werden wollen.
-Tasks
-Enge Zusammenarbeit mit unserem CTO, Entwicklern und UI/UX Designern für die Entwicklung unserer Web Apps
-Integration von REST APIs und Anbindung unseres Backends und Serverless Umgebung.
-Umsetzung von Designs
-Weiterentwicklung unserer Architektur und Mitgestaltung unserer Systemlandschaft – wir bauen was Cooles und sind noch am Anfang unserer Reise!`);
+  const [vacancyDescription, setVacancyDescription] =
+    useState(`
+      Are you experienced in front-end development with React and proficient in full-stack development with Python on the backend? Are you looking for a new challenge where you can not only write code but also use your technical expertise to design sustainable and scalable software architecture? Then join our Platform team as a Senior Full-Stack Developer (focus on front-end).
+
+Our Platform team is part of CONTACT Software's internal software and product development and forms the technological foundation for our entire product portfolio. Your work has a direct impact on the long-term development of our software products. As a Senior Full-Stack Developer, you will take responsibility for key technical components, drive innovation, and actively shape our system architecture. We rely on modern web technologies and place great value on high-quality, future-proof software solutions with long-term added value for our customers. Together, we will further develop the user interface for enterprise systems and set technological standards.
+
+As a leading provider of digital transformation in industry, CONTACT Elements offers groundbreaking solutions for PLM (Product Lifecycle Management), project management, and MES (Manufacturing Execution Systems). Our platform supports companies worldwide in more efficient collaboration and digital transformation.
+
+Your Responsibilities
+
+Architecture and further development of our user interfaces for highly complex enterprise systems
+Design and development of frameworks for our B2B product landscape
+Design and implementation of the next generation of our software products
+Technical responsibility and mentoring within the team to establish best practices and share knowledge
+Participation in all phases of software development: from technical conception to implementation, test automation, and code reviews, as well as documentation and maintenance
+Close collaboration with our experienced UX coaches to develop intuitive and high-performance applications
+Ensuring a sustainable software architecture and long-term maintainability of developed solutions
+Use of state-of-the-art technologies and continuous technological development
+
+Our technology stack:
+
+We primarily work with JavaScript/React/Redux on the frontend and Python/C++ on the backend. We deploy our software both in on-premises scenarios and in cloud environments using Kubernetes, Helm, and OpenTelemetry with hyperscalers like AWS. We work in agile projects with appropriate automation (CI/CD pipelines).
+
+What you should bring with you:
+
+Completed degree in computer science, digital media, or a related technical field with a proven focus on computer science – alternatively, a comparable IT qualification with several years of professional experience.
+Several years of experience in the development and architecture of modern web applications using React/JavaScript.
+Confident use of web technologies such as HTTP/3, HTML5, CSS, JavaScript, and the associated developer tools.
+Extensive knowledge of the use and integration of open source software in enterprise environments.
+Passion for software development and modern web technologies.
+In-depth experience with software design principles and best practices for scalable web architectures.
+Solid knowledge of backend development with Python and its interfaces to modern web frontends.
+Experience in developing modular, maintainable, and high-performance systems.
+Structured, analytical, and solution-oriented working style.
+Enjoyment of collaborative work in a highly qualified, dedicated team.
+Very good written and spoken German and English skills
+
+What we offer
+
+Exciting projects and varied tasks within a diverse team spread across Germany that is looking forward to meeting you!
+A market-oriented salary and flat hierarchies within a rapidly growing organization with a "du" culture up to management level
+Individual and professional onboarding with a mentoring program and support from your teammates
+Selection of various training courses from our training catalog for professional and personal development
+Your own choice of development environment
+Discounts for company fitness as well as participation in various sports groups, regular team and company events
+Choice between working at one of our locations, working from home, or a hybrid position
+An open and appreciative corporate culture where your own ideas are not only allowed but also welcomed
+Flexible working hours with time tracking and 30 days of vacation (based on a 5-day week)
+Subsidy for the Deutschlandticket (Germany Ticket)
+Fresh fruit and a variety of hot and cold drinks at our locations
+      `);
 
   // Settings state
   const [selectedCommunication, setSelectedCommunication] = useState("");
@@ -233,7 +277,7 @@ Prepare an interview based on the following:
           value={vacancyDescription}
           onChange={(e) => setVacancyDescription(e.target.value)}
           multiline
-          rows={4}
+          rows={8}
           fullWidth
           margin="normal"
         />

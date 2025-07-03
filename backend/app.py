@@ -15,7 +15,7 @@ load_dotenv()
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-STORAGE_DIR = os.path.join(os.getcwd(), "interviews")
+STORAGE_DIR = os.path.join(os.getcwd(), "data/interviews")
 os.makedirs(STORAGE_DIR, exist_ok=True)
 
 image_service = AIImageService(api_key=os.getenv("OPENAI_API_KEY"))
@@ -32,7 +32,7 @@ def get_config():
     """
     Returns the configuration settings for the testing application.
     """
-    with open('data/config.json', encoding='utf-8') as f:
+    with open('static_data/config.json', encoding='utf-8') as f:
         config = json.load(f)
     return jsonify(config)
 
@@ -61,7 +61,6 @@ def evaluate():
     valid_levels = ["Junior", "Middle", "Senior"]
 
     try:
-        # 📢 Вызов универсального метода
         text = AIClientService.generate_completion(
             ainame=ainame,
             aimodel=aimodel,
@@ -106,10 +105,10 @@ def start_interview():
         print("Error:", e)
         return jsonify({"error": "Internal Server Error"}), 500
 
-@app.route("/api/question/get-question/<timestamp>", methods=["GET"])
-def get_question(timestamp):
+@app.route("/api/question/get-question/<id>", methods=["GET"])
+def get_question(id):
     try:
-        filename = f"{timestamp}.json"
+        filename = f"{id}.json"
         filepath = os.path.join(STORAGE_DIR, filename)
 
         if not os.path.exists(filepath):
@@ -117,9 +116,6 @@ def get_question(timestamp):
 
         with open(filepath, "r", encoding="utf-8") as f:
             data = json.load(f)
-
-        print ('data', data)
-
 
         vacancy_name = data['settings'].get("vacancyName", "")
         vacancy_description = data['settings'].get("vacancyDescription", "")
@@ -167,27 +163,26 @@ def get_question(timestamp):
         ) 
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         print(text) 
-        data = json.loads(text)
+        questionObj = json.loads(text)
 
-        print('-------------------- data', data);  
+        print('-------------------- questionObj', questionObj);  
 
-
-        # Генерируем вопрос
         question = {
             "id": len(data["questions"]) + 1,
-            "question": data.question,
-            "answerOptions": ["111", "222", "333"],
+            "question": questionObj["question"],
+            "answerOptions": questionObj["answerOptions"],
             "type": "single",
-            "answer": ""
+            "rightAnswer": questionObj["rightAnswer"],
+            "candidateAnswer": "",
+            "point": 0
+
         }
 
-        # Добавляем вопрос в файл
         if "questions" not in data:
             data["questions"] = []
 
         data["questions"].append(question)
 
-        # Перезаписываем файл
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
@@ -216,15 +211,16 @@ def save_answer():
         with open(filepath, "r", encoding="utf-8") as f:
             interview_data = json.load(f)
 
-        # Добавляем ответ в последний вопрос
         if "questions" in interview_data and interview_data["questions"]:
             interview_data["questions"][-1]["answer"] = answer
+            if answer == interview_data["questions"][-1]["rightAnswer"]:
+                interview_data["questions"][-1]["point"] = 1
         else:
             return jsonify({"error": "No question to answer"}), 400
 
-        # Сохраняем обратно
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(interview_data, f, ensure_ascii=False, indent=2)
+
 
         return jsonify({"status": "Answer saved"}), 200
 
@@ -248,7 +244,7 @@ def generate_image_pdf():
 
 @app.route("/api/download_pdf/<filename>", methods=["GET"])
 def download_pdf(filename):
-    pdf_path = os.path.join("generated_pdfs", filename)
+    pdf_path = os.path.join("data/generated_pdfs", filename)
     if not os.path.isfile(pdf_path):
         return jsonify({"error": "File not found"}), 404
     return send_file(pdf_path, as_attachment=True)

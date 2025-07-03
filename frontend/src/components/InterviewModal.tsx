@@ -10,7 +10,9 @@ import {
   Box,
   DialogContentText,
   Divider,
-  RadioGroup, Radio, FormControlLabel
+  RadioGroup,
+  Radio,
+  FormControlLabel,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -93,11 +95,12 @@ export default function InterviewModal({
 
   const handleConfirmClose = () => {
     setConfirmOpen(false);
-    onClose(); // Закрываем основное окно
+    setCurrentQuestion(null);
+    onClose();
   };
 
   const handleCancelConfirm = () => {
-    setConfirmOpen(false); // Закрываем только подтверждение
+    setConfirmOpen(false);
   };
 
   const handleClose = (
@@ -192,31 +195,31 @@ export default function InterviewModal({
 
           {currentQuestion && (
             <Box mt={3}>
+              <Typography variant="h6" gutterBottom textAlign="center">
+                Question {currentQuestion.id} from{" "}
+                {interviewOptions.testDuration}
+              </Typography>
 
-                <Typography variant="h6" gutterBottom textAlign="center">
-      Question {currentQuestion.id} from {interviewOptions.testDuration}
-    </Typography>
-
-              {interviewOptions.selectedTestType === 'single' ? (
+              {interviewOptions.selectedTestType === "single" ? (
                 <Box mt={3}>
-    <Typography variant="h6" gutterBottom >
-      {currentQuestion.question}
-    </Typography>
+                  <Typography variant="h6" gutterBottom>
+                    {currentQuestion.question}
+                  </Typography>
 
-    <RadioGroup
-      value={selectedAnswer}
-      onChange={(e) => setSelectedAnswer(e.target.value)}
-    >
-      {currentQuestion.answerOptions.map((option, index) => (
-        <FormControlLabel
-          key={index}
-          value={option}
-          control={<Radio />}
-          label={option}
-        />
-      ))}
-    </RadioGroup>
-  </Box>
+                  <RadioGroup
+                    value={selectedAnswer}
+                    onChange={(e) => setSelectedAnswer(e.target.value)}
+                  >
+                    {currentQuestion.answerOptions.map((option, index) => (
+                      <FormControlLabel
+                        key={index}
+                        value={option}
+                        control={<Radio />}
+                        label={option}
+                      />
+                    ))}
+                  </RadioGroup>
+                </Box>
               ) : (
                 // Если testType не выбран - кнопки
                 <Box display="flex" flexDirection="column" gap={1}>
@@ -238,48 +241,44 @@ export default function InterviewModal({
             </Box>
           )}
 
-            <Box mt={2} textAlign="center">
-              <Button
-              disabled ={!selectedAnswer}
-                variant="contained"
-                color="primary"
-                onClick={async () => {
-                  try {
-                    const res = await fetch(
-                      `${process.env.NEXT_PUBLIC_API_URL}/api/question/answer`,
-                      {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                          interviewId,
-                          answer: selectedAnswer,
-                        }),
-                      }
-                    );
-
-                    if (!res.ok) {
-                      throw new Error(`Error: ${res.status}`);
+          <Box mt={2} textAlign="center">
+            <Button
+              disabled={!selectedAnswer}
+              variant="contained"
+              color="primary"
+              onClick={async () => {
+                try {
+                  const res = await fetch(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/question/answer`,
+                    {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        interviewId,
+                        answer: selectedAnswer,
+                      }),
                     }
+                  );
 
-                    const data = await res.json();
-                    console.log("Answer saved:", data);
-
-                    // Если хочешь сразу загрузить следующий вопрос:
-                    // setCurrentQuestion(data.nextQuestion);
-
-                    // Или очистить выбор:
-                    setSelectedAnswer(null);
-                  } catch (error) {
-                    console.error("Failed to send answer:", error);
+                  if (!res.ok) {
+                    throw new Error(`Error: ${res.status}`);
                   }
-                }}
-              >
-                Send Answer
-              </Button>
-            </Box>
 
+                  const data = await res.json();
+                  console.log("Answer saved:", data);
+
+
+                  setSelectedAnswer(null);
+                } catch (error) {
+                  console.error("Failed to send answer:", error);
+                }
+              }}
+            >
+              Send Answer
+            </Button>
+          </Box>
         </DialogContent>
 
         <DialogActions>

@@ -13,28 +13,19 @@ deepseek_api_key = os.getenv("DEEPSEEK_API_KEY")
 class AIClientService:
     @staticmethod
     def generate_completion(ainame, aimodel, temperature, maxTokens, prompt_text):
-        """
-        Generates text completion using the specified AI provider.
-        Returns the text string.
-        """
-
         ainame = ainame.lower()
         print('ainame: ' + ainame)
-        print('!!! PROMPT BEGIN: \n\n' + prompt_text + '\n\n !!! PROMPT_END')
+        print('!!! PROMPT BEGIN: \n' + prompt_text + '\n !!! PROMPT_END')
 
         if ainame == "openai":
             response = openai_client.chat.completions.create(
                 model=aimodel,
-                #messages=[
-                #    {"role": "system", "content": "You are a helpful assistant."},
-                #    {"role": "user", "content": prompt_text}
-                #],
                 messages=[
                     {"role": "system", "content": "You are an expert HR assistant."},
                     {"role": "user", "content": prompt_text}
                 ],
                 temperature=temperature,
-                max_tokens=10,
+                max_tokens=maxTokens,
                 top_p=1,
                 frequency_penalty=0,
                 presence_penalty=0,
@@ -44,15 +35,11 @@ class AIClientService:
             return result
 
         elif ainame == "gemini":
-            #print('!!! gemini_model ')
-            #print('aimodel: ', aimodel)
             gemini_model = genai.GenerativeModel(aimodel,
                                                  generation_config={
                     "temperature": temperature,
                     "max_output_tokens": maxTokens
                 })
-            #print('gemini_model:', gemini_model)
-            #print("GEMINI_API_KEY:", os.getenv("GEMINI_API_KEY"))
             try:
                 gemini_response = gemini_model.generate_content(prompt_text)
             except Exception as e:
